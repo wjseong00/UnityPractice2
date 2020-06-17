@@ -10,8 +10,11 @@ public class PlayerFire : MonoBehaviour
     public GameObject grenades;
     public GameObject firePoint;
     public float throwPower = 10.0f;
-    
-
+    EnemyFSM ef;
+    private void Start()
+    {
+        ef = GameObject.Find("Enemy").GetComponent<EnemyFSM>();
+    }
     // Update is called once per frame
     void Update()
     {
@@ -37,13 +40,19 @@ public class PlayerFire : MonoBehaviour
             Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
             RaycastHit hitInfo;
             //레이랑 충돌했냐?
-            if (Physics.Raycast(ray, out hitInfo))
+            int layer = gameObject.layer;
+            layer = 1 << 8 | 1 << 9 | 1 << 12;
+            if (Physics.Raycast(ray, out hitInfo,100f,layer))
             {
                 print("충돌오브젝트 : " + hitInfo.collider.name);
-            
+                if(hitInfo.collider.name =="Enemy")
+                {
+                    ef.Hit();
+                }
+                
                 //충돌 자리에 오브젝트 생성
                 //충돌파편 이펙트 생성
-                GameObject spark = Instantiate(bullet);
+                GameObject spark = Instantiate(bullet,hitInfo.transform);
                 //부딪힌 지점 hitINfo 안에 정보들이 담겨 있다
                 spark.transform.position = hitInfo.point;
                 //파편이펙트
@@ -53,8 +62,7 @@ public class PlayerFire : MonoBehaviour
             //레이어 마스크 사용 충돌처리
             //유니티 내부적으로 속도향상을 위해 비트연산 처리가 된다
             //총 32비트를 사용하기때문에 레이어도 32개까지 추라 가능함
-            int layer = gameObject.layer;
-            layer = 1 << 8 | 1<<9 | 1<<12;
+           
             //if(Physics.Raycast(ray, out hitInfo,100,layer)) //layer만 충돌
             //if (Physics.Raycast(ray, out hitInfo, 100, ~layer)) //layer만 충돌제외
             {
