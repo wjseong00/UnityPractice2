@@ -10,10 +10,10 @@ public class PlayerFire : MonoBehaviour
     public GameObject grenades;
     public GameObject firePoint;
     public float throwPower = 10.0f;
-    EnemyFSM ef;
+    //EnemyFSM ef;
     private void Start()
     {
-        ef = GameObject.Find("Enemy").GetComponent<EnemyFSM>();
+        //ef = GameObject.Find("Enemy").GetComponent<EnemyFSM>();
     }
     // Update is called once per frame
     void Update()
@@ -45,9 +45,16 @@ public class PlayerFire : MonoBehaviour
             if (Physics.Raycast(ray, out hitInfo,100f,layer))
             {
                 print("충돌오브젝트 : " + hitInfo.collider.name);
+
+                //내총알에 충돌했으니 몬스터 체력을 깎기
+                EnemyFSM enemy = hitInfo.collider.GetComponent<EnemyFSM>();
+                enemy.hitDamage(10);
+                //hitInfo.collider.gameObject.GetComponent<EnemyFSM>().hitDamage(10);
+                //hitInfo.transform.GetComponent<EnemyFSM>().hitDamage(10);
+
                 if(hitInfo.collider.name =="Enemy")
                 {
-                    ef.Hit();
+                    //ef.Hit();
                 }
                 
                 //충돌 자리에 오브젝트 생성
