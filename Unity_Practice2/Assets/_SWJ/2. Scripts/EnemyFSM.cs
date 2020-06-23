@@ -50,8 +50,13 @@ public class EnemyFSM : MonoBehaviour
     public float findRange=15f;//플레이어를 찾는 범위
     public float moveRange=30f;//시작지점에서 최대 이동
     Vector3 startPoint;//몬스터 시작위치
+    Quaternion startRotation; //몬스터 시작회전값
     Transform player;   //플레이어를 찾기위해
     CharacterController cc; //몬스터 이동을 위해 캐릭터컨트롤러 컴포넌트
+
+    //애니메이션용 제어하기 위한 애니메이터 컴포넌트
+    Animator anim;
+
 
     //몬스터 일반변수
     int hp = 100;//체력
@@ -68,10 +73,14 @@ public class EnemyFSM : MonoBehaviour
         state = EnemyState.Idle;
         //시작지점 저장
         startPoint = transform.position;
+        startRotation = transform.rotation;
         //플레이어 설정
         player = GameObject.Find("Player").transform;
         //캐릭터 컨트롤러 컴포넌트
         cc = GetComponent<CharacterController>();
+        //애니메이터 컴포넌트
+        anim = GetComponentInChildren<Animator>();
+
     }
 
     void Update()
@@ -131,6 +140,9 @@ public class EnemyFSM : MonoBehaviour
         {
             state = EnemyState.Move;
             print("상태전환 : Idle -> Move");
+
+            //애니메이션
+            anim.SetTrigger("Move");
         }
 
     }
@@ -161,6 +173,7 @@ public class EnemyFSM : MonoBehaviour
         {
             state = EnemyState.Return;
             print("상태전환 : Move -> Return");
+            anim.SetTrigger("Return");
 
         }
         //리턴상태가 아니면 플레이어를 추격해야 한다
@@ -200,6 +213,7 @@ public class EnemyFSM : MonoBehaviour
         {
             state = EnemyState.Attack;
             print("상태전환 : Move -> Attack");
+            anim.SetTrigger("Attack");
         }
 
     }
@@ -231,14 +245,17 @@ public class EnemyFSM : MonoBehaviour
 
                 //타이머 초기화
                 timer = 0f;
+                anim.SetTrigger("Attack");
             }
         }
         else//현재상태를 무브로 전환하기 (재추격)
         {
             state = EnemyState.Move;
             print("상태전환 : Attack -> Move");
+
             //타이머 초기화
             timer = 0f;
+            anim.SetTrigger("Move");
         }
 
     }
@@ -272,8 +289,11 @@ public class EnemyFSM : MonoBehaviour
         {
             //위치값을 초기값으로 
             transform.position = startPoint;
+            transform.rotation = Quaternion.identity;//tartRotation;
+            //Quaternion.identity reset효과
             state = EnemyState.Idle;
             print("상태전환 : Return -> Idle");
+            anim.SetTrigger("Idle");
         }
 
 
@@ -295,6 +315,7 @@ public class EnemyFSM : MonoBehaviour
             state = EnemyState.Damaged;
             print("상태전환 : Any state -> Damaged");
             print("HP : " + hp);
+            anim.SetTrigger("Damaged");
 
             Damaged();
         }
@@ -303,7 +324,7 @@ public class EnemyFSM : MonoBehaviour
         {
             state = EnemyState.Die;
             print("상태전환 : Any state -> Die");
-
+            anim.SetTrigger("Die");
             Die();
         }
     }
@@ -332,6 +353,7 @@ public class EnemyFSM : MonoBehaviour
         //현재상태를 이동으로 전환
         state = EnemyState.Move;
         print("상태전환 : Damaged -> Move");
+        anim.SetTrigger("Move");
     }
 
     //죽음상태 (Any State)
