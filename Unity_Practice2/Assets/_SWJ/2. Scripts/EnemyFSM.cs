@@ -382,38 +382,7 @@ public class EnemyFSM : MonoBehaviour
         print("죽었다!!");
         Destroy(gameObject);
     }
-
-    //public void Hit()
-    //{
-    //    enemyHp--;
-    //    if (enemyHp>=1)
-    //    {
-    //        //preState = state;
-    //        state = EnemyState.Damaged;
-    //        StartCoroutine(hitDameage());
-    //    }
-    //    else if (enemyHp <= 0)
-    //    {
-    //
-    //        StartCoroutine(enemyDie());
-    //    }
-    //}
-    //IEnumerator hitDameage()
-    //{
-    //    Debug.Log("Damage");
-    //    
-    //    Debug.Log(enemyHp);
-    //    
-    //    yield return new WaitForSeconds(2f);
-    //    state = EnemyState.Idle;
-    //    
-    //}
-    //IEnumerator enemyDie()
-    //{
-    //    Debug.Log("Die");
-    //    state = EnemyState.Die;
-    //    yield return null;
-    //}
+    
     private void OnDrawGizmos()
     {
         //공격 가능 범위

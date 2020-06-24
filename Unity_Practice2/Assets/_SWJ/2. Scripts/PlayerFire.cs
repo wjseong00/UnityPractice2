@@ -52,10 +52,6 @@ public class PlayerFire : MonoBehaviour
                 //hitInfo.collider.gameObject.GetComponent<EnemyFSM>().hitDamage(10);
                 //hitInfo.transform.GetComponent<EnemyFSM>().hitDamage(10);
 
-                if(hitInfo.collider.name =="Enemy")
-                {
-                    //ef.Hit();
-                }
                 
                 //충돌 자리에 오브젝트 생성
                 //충돌파편 이펙트 생성
