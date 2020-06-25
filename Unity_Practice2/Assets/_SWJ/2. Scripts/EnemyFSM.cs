@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.AI;
 //몬스터 유한상태머신
 public class EnemyFSM : MonoBehaviour
 {
-    
 
+    NavMeshAgent nav;
     //몬스터 상태 이넘문
     enum EnemyState
     {
@@ -80,7 +79,7 @@ public class EnemyFSM : MonoBehaviour
         cc = GetComponent<CharacterController>();
         //애니메이터 컴포넌트
         anim = GetComponentInChildren<Animator>();
-
+        nav = GetComponent<NavMeshAgent>();
     }
 
     void Update()
@@ -179,11 +178,13 @@ public class EnemyFSM : MonoBehaviour
         //리턴상태가 아니면 플레이어를 추격해야 한다
         else if (Vector3.Distance(transform.position, player.position) > attackRange)
         {
+            //nav.SetDestination(player.position);
+            nav.destination = player.position;
             //플레이어를 추격
             //이동방향 (벡터의 뺄셈)
-            Vector3 dir = (player.position - transform.position).normalized;
+            //Vector3 dir = (player.position - transform.position).normalized;
             //dir.Normalize();
-
+            
             //몬스터가 백스텝으로 쫓아온다
             //몬스터가 타겟을 바라보도록 하자
             //방법1
@@ -197,7 +198,7 @@ public class EnemyFSM : MonoBehaviour
             //타겟과 본인이 일직선상일 경우 백덤블링으로 회전을 한다
 
             //최종적으로 자연스런 회전처리를 하려면 결국 쿼터니온을 사용해야 한다
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(dir), 10 * Time.deltaTime);
+            //transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(dir), 10 * Time.deltaTime);
 
             //캐릭터컨트롤러 이용해서 이동하기
             //cc.Move(dir * Time.deltaTime * speed);
@@ -207,11 +208,12 @@ public class EnemyFSM : MonoBehaviour
             //심플무브는 최소한의 물리가 적용되어 중력문제를 해결할 수 있다
             //단 내부적으로 시간처리를 하기때문에 
             //Time.deltaTime을 사용하지 않는다
-            cc.SimpleMove(dir * speed);
+            //cc.SimpleMove(dir * speed);
         }
         else //공격범위 안에 들어옴
         {
             state = EnemyState.Attack;
+            nav.ResetPath();
             print("상태전환 : Move -> Attack");
             anim.SetTrigger("Attack");
         }
@@ -281,9 +283,10 @@ public class EnemyFSM : MonoBehaviour
         //도착하면 대기상태로 변경
         if(Vector3.Distance(transform.position,startPoint)>0.1f)
         {
-            Vector3 dir = (startPoint - transform.position).normalized;
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(dir), 10 * Time.deltaTime);
-            cc.SimpleMove(dir * speed);
+            nav.SetDestination(startPoint);
+            //Vector3 dir = (startPoint - transform.position).normalized;
+            //transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(dir), 10 * Time.deltaTime);
+            //cc.SimpleMove(dir * speed);
         }
         else
         {
